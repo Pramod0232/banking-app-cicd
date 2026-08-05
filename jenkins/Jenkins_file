@@ -9,7 +9,7 @@ pipeline {
         stage('SCM_Checkout') {
             steps {
                 echo 'Perform SCM Checkout'
-				git 'https://github.com/PL-DevOps-GenAI-A1125/BankingWebApp.git'			
+				git branch: 'main', url: 'https://github.com/Pramod0232/banking-app-cicd.git'			
             }
         }
         stage('Application Build') {
@@ -21,30 +21,29 @@ pipeline {
         stage('Application Image Build') {
             steps {
                 echo 'Perform Application Image Build'
-				sh "docker build -t loksaieta/bankingwebapp:${BUILD_NUMBER} ."
-				sh "docker tag loksaieta/bankingwebapp:${BUILD_NUMBER} loksaieta/bankingwebapp:latest"
+				sh "docker build -t pramodr0232/banking-app:${BUILD_NUMBER} ."
+				sh "docker tag pramodr0232/banking-app:${BUILD_NUMBER} pramodr0232/banking-app:latest"
             }
         }
         stage('Login to DockerHub') {
             steps {
                 echo 'Login to DockerHub'
 				sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-				
             }
         }
         stage('Push to DockerHub') {
             steps {
                 echo 'Push Image to DockerHub'
-				sh "docker push loksaieta/bankingwebapp:${BUILD_NUMBER}"
-				sh "docker push loksaieta/bankingwebapp:latest"
-				sh "docker rmi loksaieta/bankingwebapp:${BUILD_NUMBER}"
-				sh "docker rmi loksaieta/bankingwebapp:latest"
+				sh "docker push pramodr0232/banking-app:${BUILD_NUMBER}"
+				sh "docker push pramodr0232/banking-app:latest"
+				sh "docker rmi pramodr0232/banking-app:${BUILD_NUMBER}"
+				sh "docker rmi pramodr0232/banking-app:latest"
             }
         }
         stage('Deploy to Kubernetes') {
             steps {
                 script{
-				sshPublisher(publishers: [sshPublisherDesc(configName: 'Kubernetes', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'kubectl apply -f bankingdeploy.yaml', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '.', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '*.yaml')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+				sshPublisher(publishers: [sshPublisherDesc(configName: 'kubernetes_master', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'kubectl apply -f bankingdeploy.yaml', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '.', remoteDirectorySDF: false, removePrefix: '', sourceFiles: 'bankingdeploy.yaml')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
 				}				
             }
         }
