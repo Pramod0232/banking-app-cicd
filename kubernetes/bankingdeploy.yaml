@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bankingapp-deploy
+  labels:
+    app: bankapp-deploy-lbl
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: bankapp-pod-lbl
+  template:
+    metadata:
+      labels:
+        app: bankapp-pod-lbl
+    spec:
+      containers:
+      - name: banking-app-container
+        image: pramodr0232/banking-app:latest
+        ports:
+        - containerPort: 8082
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bankingapp-np-service
+  labels:
+    app: bankapp-svc-lbl
+spec:
+  selector:
+    app: bankapp-pod-lbl
+
+  type: NodePort
+  ports:
+  - nodePort: 31022
+    port: 8082
+    targetPort: 8082

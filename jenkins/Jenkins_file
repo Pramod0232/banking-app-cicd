@@ -1,0 +1,52 @@
+pipeline {
+    agent { label 'slave1' }
+
+	environment {	
+		DOCKERHUB_CREDENTIALS=credentials('dockerloginid')
+	}
+
+    stages {
+        stage('SCM_Checkout') {
+            steps {
+                echo 'Perform SCM Checkout'
+				git 'https://github.com/PL-DevOps-GenAI-A1125/BankingWebApp.git'			
+            }
+        }
+        stage('Application Build') {
+            steps {
+                echo 'Perform Application Build'
+				sh 'mvn clean package'
+            }
+        }
+        stage('Application Image Build') {
+            steps {
+                echo 'Perform Application Image Build'
+				sh "docker build -t loksaieta/bankingwebapp:${BUILD_NUMBER} ."
+				sh "docker tag loksaieta/bankingwebapp:${BUILD_NUMBER} loksaieta/bankingwebapp:latest"
+            }
+        }
+        stage('Login to DockerHub') {
+            steps {
+                echo 'Login to DockerHub'
+				sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+				
+            }
+        }
+        stage('Push to DockerHub') {
+            steps {
+                echo 'Push Image to DockerHub'
+				sh "docker push loksaieta/bankingwebapp:${BUILD_NUMBER}"
+				sh "docker push loksaieta/bankingwebapp:latest"
+				sh "docker rmi loksaieta/bankingwebapp:${BUILD_NUMBER}"
+				sh "docker rmi loksaieta/bankingwebapp:latest"
+            }
+        }
+        stage('Deploy to Kubernetes') {
+            steps {
+                script{
+				sshPublisher(publishers: [sshPublisherDesc(configName: 'Kubernetes', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'kubectl apply -f bankingdeploy.yaml', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '.', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '*.yaml')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+				}				
+            }
+        }
+    }
+}
