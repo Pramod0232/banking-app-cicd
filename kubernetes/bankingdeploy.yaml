@@ -19,8 +19,6 @@ spec:
         image: pramodr0232/banking-app:latest
         ports:
         - containerPort: 8082
-        - name: metrics
-          containerPort: 8080
 ---
 apiVersion: v1
 kind: Service
@@ -36,6 +34,3 @@ spec:
   - nodePort: 31022
     port: 8082
     targetPort: 8082
-  - port: 8080
-    targetPort: 8080
-    name: metrics
