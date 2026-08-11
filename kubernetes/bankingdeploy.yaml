@@ -31,6 +31,10 @@ spec:
     app: bankapp-pod-lbl
   type: NodePort
   ports:
-  - nodePort: 31022
+  - name: http
+    nodePort: 31022
     port: 8082
     targetPort: 8082
+  - name: metrics
+    port: 8080
+    targetPort: 8080
