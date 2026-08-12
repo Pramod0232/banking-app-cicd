@@ -25,7 +25,7 @@ This solution transitions FundMe to a **microservices-based architecture** with 
 - **Monitoring:** Prometheus, Grafana
 - **Application:** Java Spring Boot, Maven
 
-- ## 🔄 CI/CD Pipeline Workflow
+## 🔄 CI/CD Pipeline Workflow
 
 The pipeline is triggered automatically on every push to the `main` branch and consists of 6 stages:
 
@@ -38,6 +38,11 @@ The pipeline is triggered automatically on every push to the `main` branch and c
 | **5. Push to DockerHub** | Pushes the image to `pramodr0232/banking-app:latest`. |
 | **6. Deploy to Kubernetes** | Applies the YAML manifest to the cluster using `kubectl`. |
 
+### 📸 Jenkins Pipeline (Success)
+![Jenkins Pipeline Success](https://github.com/Pramod0232/banking-app-cicd/blob/main/jenkins-pipeline-success.png)
+
+---
+
 ## 📂 Project Structure
 banking-app-cicd/
 ├── application/ # Spring Boot source code, pom.xml, Dockerfile
@@ -45,11 +50,18 @@ banking-app-cicd/
 ├── jenkins/ # Jenkinsfile (6-stage declarative pipeline)
 └── README.md # This documentation
 
+
 ## 🚀 Live Application Access
 
 The application is deployed to a Kubernetes cluster and exposed via a **NodePort service**. It can be accessed at: http://<MASTER_ELASTIC_IP>:31022
 
+
 > **Note:** Replace `<MASTER_ELASTIC_IP>` with the actual Elastic IP of your Kubernetes Master instance.
+
+### 📸 Live Banking App
+![Live Banking App](https://github.com/Pramod0232/banking-app-cicd/blob/main/banking-app-live.png)
+
+---
 
 ## 📊 Monitoring & Observability
 
@@ -63,8 +75,14 @@ A dedicated monitoring server is configured with **Prometheus** and **Grafana** 
 
 The Grafana dashboard is accessible at: http://<MONITORING_PUBLIC_IP>:3000
 
+
 - **Username:** `admin`
 - **Password:** `1234`
+
+### 📸 Grafana Dashboard
+![Grafana Dashboard](https://github.com/Pramod0232/banking-app-cicd/blob/main/grafana-dashboard.png)
+
+---
 
 ## ✅ Project Status
 
